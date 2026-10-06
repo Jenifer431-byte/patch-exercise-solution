@@ -1,28 +1,42 @@
-\# Notes and Assumptions
+\# Notes
 
 
 
-\## Setup
+\## Summary of changes
 
-\- Ran the app on Java 26 and Node 24. Both worked without any changes.
+\- Status filter: SQL AND/OR precedence bug in TaskRepository.java. Added brackets so the status condition applies to all results.
 
-\- Backend needs a restart after Java changes. Frontend reloads automatically.
+\- Page reset: App.jsx now resets to page 1 when search or status changes.
+
+\- Stale responses: added a cancelled flag in useTasks.js so old API responses do not overwrite newer ones.
+
+\- Controller: invalid status now returns 400 instead of 500. Removed Thread.sleep and replaced System.out with a logger.
+
+
+
+\## What I chose not to change
+
+\- Sorting UX and input validation on task creation. I only fixed bugs I could reproduce in the time available.
 
 
 
 \## Assumptions
 
-\- Search is a substring match on title and description (not whole-word), so "rate" also matches "Migrate". I treated this as expected behaviour.
+\- Search is a substring match on title and description, so "rate" also matches "Migrate". I treated this as expected.
 
-\- The tasks shown in the list (e.g. "Add input validation", "Improve table sorting UX") are sample data, so I only fixed bugs I could reproduce myself.
+\- Page reset was verified by reading the code, not tested manually on page 3.
 
-\- Page reset on search/filter change was verified by reading the code only, not tested manually on page 3.
+\- Ran on Java 26 and Node 24 without any changes.
 
 
 
-\## Scope
+\## Biggest remaining risk
 
-\- I fixed four issues: status filter (SQL AND/OR precedence), page reset, stale API responses, and controller validation (400 instead of 500).
+\- Task creation accepts blank titles and negative priority values, and there are no automated tests, so regressions are hard to catch.
 
-\- Other possible improvements (sorting UX, input validation on task creation) were not done because of the timebox.
+
+
+\## Tools/AI used
+
+\- I used Claude to help find the bugs and draft the fixes. I tested the status filter and the invalid status case in the browser, and wrote the handwritten explanations myself.
 
