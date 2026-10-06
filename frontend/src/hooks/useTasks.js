@@ -8,17 +8,29 @@ export function useTasks(query, status, page, pageSize) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // If the inputs change before this request finishes, the cleanup below
+    // sets cancelled = true so the old (stale) response is ignored.
+    let cancelled = false;
+
     setLoading(true);
+    setError(null);
 
     fetchTasks({ query, status, page, pageSize })
       .then((data) => {
+        if (cancelled) return;
         setTasks(data.items);
         setTotal(data.total);
-        setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
+        if (!cancelled) setError(err.message);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
+
+    return () => {
+      cancelled = true;
+    };
   }, [query, status, page, pageSize]);
 
   return { tasks, total, loading, error };
